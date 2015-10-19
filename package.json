@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "author": "Kenneth Ormandy <hello@kennethormandy.com>",
   "devDependencies": {
-    "http-server": "0.8.5"
+    "http-server": "0.8.5",
+    "surge": "latest"
   },
   "scripts": {
     "start": "http-server ./src",
-    "test": "npm start"
+    "test": "npm start",
+    "deploy": "surge ./src $npm_package_name.surge.sh"
   }
 }
