@@ -1,0 +1,15 @@
+{
+  "name": "example-opentype-parse",
+  "version": "0.1.0",
+  "author": "Kenneth Ormandy <hello@kennethormandy.com>",
+  "dependencies": {
+    "opentype": "0.1.2"
+  },
+  "devDependencies": {
+    "http-server": "0.8.5"
+  },
+  "scripts": {
+    "start": "http-server ./src",
+    "test": "npm start"
+  }
+}

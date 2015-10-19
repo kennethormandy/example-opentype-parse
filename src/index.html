@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>bramstein/opentype example</title>
+</head>
+<body>
+  <h1>bramstein/opentype example</h1>
+  <pre id="output"></pre>
+  <script src="vendor/opentype.js"></script>
+  <script>
+
+  function parse (file) {
+    var xhr = new XMLHttpRequest()
+    xhr.open('GET', file, true)
+    xhr.responseType = 'arraybuffer'
+    xhr.onload = function (e) {
+      console.time('parse')
+      var resp = opentype.parse(this.response)
+      console.log(resp)
+      getFontName(resp)
+      console.timeEnd('parse')
+    }
+    xhr.send()
+  }
+
+  parse('fonts/opensans-bold.woff')
+  parse('fonts/firamono-regular.woff')
+
+  function getFontName (font) {
+    var woffMeta
+    var woffName
+    var woffTables = font.tables || false
+
+    if (typeof font.header !== 'undefined' && woffTables) {
+      if (typeof woffTables.name['en'] !== 'undefined' && typeof woffTables.name['en'][1] !== 'undefined') {
+        woffMeta = woffTables['name']['en']
+
+        // Name
+        // If there’s 16, it’s the family name, otherwise it’s probably 1
+        if (typeof woffMeta[16] !== 'undefined') {
+          woffName = woffMeta[16]
+        } else if (typeof woffMeta[1] !== 'undefined') {
+          woffName = woffMeta[1]
+        }
+
+        // If there’s 17, it is the style’s name, otherwise it’s 2
+        if (typeof woffMeta[17] !== 'undefined') {
+          woffStyle = woffMeta[17]
+        } else if (typeof woffMeta[2] !== 'undefined') {
+          woffStyle = woffMeta[2]
+        }
+      } else {
+        // Have to use the en-US version with weird special characters
+        // and do some weird replacing to get rid of the unknown unicode characters
+        woffMeta = woffTables.name['en-US']
+        if (typeof woffMeta[16] !== 'undefined') {
+          woffName = woffMeta[16].replace(RegExp(woffMeta[16][0], 'g'), '')
+        } else if (typeof woffMeta[1] !== 'undefined') {
+          woffName = woffMeta[1].replace(RegExp(woffMeta[1][0], 'g'), '')
+        }
+
+        // Style
+        // If there’s 17, it is the style’s name, otherwise it’s 2
+        if (typeof woffMeta[17] !== 'undefined') {
+          woffStyle = woffMeta[17].replace(RegExp(woffMeta[17][0], 'g'), '')
+        } else if (typeof woffMeta[2] !== 'undefined') {
+          woffStyle = woffMeta[2].replace(RegExp(woffMeta[2][0], 'g'), '')
+        }
+      }
+    }
+
+    output(woffName + ' ' + woffStyle)
+    return woffName + ' ' + woffStyle;
+  }
+
+  function output (msg) {
+    document.body.innerHTML += msg + '<br>'
+  }
+  </script>
+</body>
+</html>
